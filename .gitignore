@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Model & large files (optional but recommended)
+model/fake_news_lstm.h5
+model/tokenizer.pkl
+
+# Database
+database.db
+
+# Environment & secrets
+key.py
+.env
+
+# OS files
+.DS_Store
+Thumbs.db

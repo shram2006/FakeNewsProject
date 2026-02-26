@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fake News Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f001f 0%, #1a0033 25%, #2d004d 50%, #1a0033 75%, #0f001f 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(80, 40, 120, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(100, 60, 140, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .navbar {
+            position: relative;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(150, 100, 200, 0.15);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-brand .icon {
+            font-size: 30px;
+            margin-right: 12px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .user-info {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #7209b7 0%, #5a189a 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 3px 10px rgba(82, 9, 143, 0.3);
+        }
+
+        .logout-btn {
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff9999;
+            border: 1px solid rgba(255, 150, 150, 0.4);
+            padding: 10px 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 100, 100, 0.25);
+            border-color: rgba(255, 150, 150, 0.6);
+            box-shadow: 0 5px 15px rgba(255, 100, 100, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1250px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .header-section h1 {
+            color: #ffffff;
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+
+        .header-section p {
+            color: rgba(200, 200, 220, 0.9);
+            font-size: 16px;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 28px;
+        }
+
+        .article-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(150, 100, 200, 0.2);
+            border-radius: 18px;
+            padding: 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.6s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(150, 100, 200, 0.08), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .article-card:hover::before {
+            left: 100%;
+        }
+
+        .article-card:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(150, 100, 200, 0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25),
+                        inset 0 0 20px rgba(150, 100, 200, 0.03);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .article-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #f0f0f0;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .article-title a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .article-title a:hover {
+            color: #d8d8ff;
+        }
+
+        .article-description {
+            font-size: 13px;
+            color: rgba(230, 204, 255, 0.75);
+            margin-botto190, 190, 210, 0.8
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .article-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(150, 100, 200, 0.1);
+        }
+
+        .prediction-badge {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prediction-badge.REAL {
+            background: rgba(76, 175, 80, 0.2);
+            color: #a5d6a7;
+            border: 1px solid rgba(76, 175, 80, 0.4);
+        }
+
+        .prediction-badge.FAKE {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ef9a9a;
+            border: 1px solid rgba(244, 67, 54, 0.4);
+        }
+
+        .confidence {
+            font-size: 12px;
+            color: rgba(190, 190, 210, 0.8);
+            font-weight: 700;
+        }
+
+        .confidence-value {
+            color: #d8d8ff;
+            font-weight: 800;
+        }
+
+        .no-articles {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .no-articles h2 {
+            color: rgba(230, 204, 255, 0.9);
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .no-articles p {
+            color: rgba(230, 204, 255, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .navbar-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .header-section h1 {
+                font-size: 32px;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="icon">🔍</span>FAKE NEWS DETECTOR
+        </div>
+        <div class="navbar-right">
+            <div class="user-info">
+                <div class="user-avatar">{{ session.user[0].upper() }}</div>
+                <span>{{ session.user }}</span>
+            </div>
+            <a href="{{ url_for('logout') }}" class="logout-btn">🚪 Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <h1>📰 REAL-TIME NEWS INTELLIGENCE</h1>
+            <p>Advanced LSTM Neural Networks Detecting Fake News. Stay Updated with Verified Headlines from Around the Globe.</p>
+        </div>
+
+        {% if articles %}
+        <div class="articles-grid">
+            {% for article in articles %}
+            <div class="article-card">
+                <div class="article-title">
+                    <a href="{{ article.url }}" target="_blank">{{ article.title }}</a>
+                </div>
+                {% if article.description %}
+                <div class="article-description">{{ article.description }}</div>
+                {% endif %}
+                <div class="article-footer">
+                    <div class="prediction-badge {{ article.prediction }}">
+                        {% if article.prediction == 'REAL' %}
+                            ✓ REAL
+                        {% else %}
+                            ✗ FAKE
+                        {% endif %}
+                    </div>
+                    <div class="confidence">
+                        <span class="confidence-value">{{ article.confidence }}%</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-articles">
+            <h2>📡 No articles available</h2>
+            <p>Unable to fetch articles at the moment. Please try again later.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

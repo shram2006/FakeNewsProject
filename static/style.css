@@ -1,0 +1,121 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #07070b 0%, #0e0920 100%);
+    color: #e6eef8;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background-color: transparent;
+    color: #e6eef8;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+}
+
+h2 {
+    text-align: center;
+    color: #e6eef8;
+}
+
+.articles {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.article-card {
+    background-color: #0f1320;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+.article-card a {
+    font-weight: bold;
+    color: #dbe9ff;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.article-card a:hover {
+    text-decoration: underline;
+}
+
+.description {
+    margin: 8px 0;
+    color: rgba(220,225,240,0.8);
+}
+
+.result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.label.real {
+    color: #0b3b1f;
+    background-color: #c6f6d5;
+    padding: 6px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.label.fake {
+    color: #58141a;
+    background-color: #ffd6d6;
+    padding: 6px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.confidence {
+    margin-left: 10px;
+    font-weight: normal;
+    color: rgba(220,225,240,0.9);
+}
+
+/* Accessibility helpers */
+a:focus, button:focus, .logout-btn:focus {
+    outline: 3px solid rgba(130,90,200,0.6);
+    outline-offset: 2px;
+}
+
+.prediction-badge {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.prediction-badge.real {
+    background: rgba(76, 175, 80, 0.14);
+    color: #c8f5d0;
+    border: 1px solid rgba(76,175,80,0.28);
+}
+
+.prediction-badge.fake {
+    background: rgba(244, 67, 54, 0.12);
+    color: #ffd2d2;
+    border: 1px solid rgba(244,67,54,0.28);
+}
+
+.article-title a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.user-info, .logout-btn {
+    color: #e6eef8;
+}
